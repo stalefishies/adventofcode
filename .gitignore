@@ -1,0 +1,43 @@
+# Only track files with an extension and makefiles
+*
+!/**/
+!*.*
+!**/makefile
+!**/Makefile
+
+# Ignore files being edited
+*.swp
+*~
+
+# Ignore OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Ignore compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.exe
+*.class
+*.pyc
+*.pyo
+
+# Ignore debugger files
+*.debug
+*.pdb
+*.ilk
+*.exp
+*.rdbg
+
+# Ignore inputs, build output, and 2019 python solutions
+build
+inputs
+2019
