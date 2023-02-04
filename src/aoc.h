@@ -3,6 +3,7 @@
 #include "lib/string.h"
 #include "lib/inputs.h"
 #include "lib/parser.h"
+#include "lib/number.h"
 
 #if defined(AOC_SOLUTION) || defined(__clang_analyzer__)
 

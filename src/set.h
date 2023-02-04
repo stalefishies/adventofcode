@@ -242,6 +242,8 @@ static SET_T(slot) *SET_N(SlotPtr)(SET_T() set, SET_KEY key) {
 }
 
 SET_LINKAGE bool SET_N(Del)(SET_T() set, SET_KEY key) {
+    if (set.cap == 0) { return false; }
+
     u64 hash = SET_HASH(key);
     u64 mask = set.cap - 1;
     size_t index = (SET_FIB * hash) & mask;
@@ -278,6 +280,8 @@ SET_LINKAGE bool SET_N(Del)(SET_T() set, SET_KEY key) {
 }
 
 SET_LINKAGE bool SET_N(Has)(SET_T() set, SET_KEY key) {
+    if (set.cap == 0) { return false; }
+
     SET_T(slot) *slot = SET_N(SlotPtr)(set, key);
     return (slot && *slot);
 }
@@ -288,6 +292,12 @@ SET_LINKAGE SET_MAP SET_N(Get)(SET_T() set, SET_KEY key)
 SET_LINKAGE SET_KEY SET_N(Get)(SET_T() set, SET_KEY key)
 #endif
 {
+#ifdef SET_MAP
+    if (set.cap == 0) { return (SET_MAP){0}; }
+#else
+    if (set.cap == 0) { return (SET_KEY){0}; }
+#endif
+
     SET_T(slot) *slot = SET_N(SlotPtr)(set, key);
     if (slot && *slot) {
 #ifdef SET_MAP
@@ -308,6 +318,8 @@ SET_LINKAGE SET_MAP *SET_N(Ptr)(SET_T() set, SET_KEY key)
 SET_LINKAGE SET_KEY *SET_N(Ptr)(SET_T() set, SET_KEY key)
 #endif
 {
+    if (set.cap == 0) { return NULL; }
+
     SET_T(slot) *slot = SET_N(SlotPtr)(set, key);
     if (slot && *slot) {
 #ifdef SET_MAP
