@@ -112,9 +112,9 @@ void solver(void) {
             ++height[state.n];
         }
 
-        State *prev = setPtr(states, state);
-        if (prev) {
-            n_0 = prev->n;
+        State prev = state;
+        if (setRead(states, &prev)) {
+            n_0 = prev.n;
             n_1 = state.n;
 
             break;

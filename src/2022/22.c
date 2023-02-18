@@ -144,11 +144,8 @@ void solver(void) {
                 pos.d = (pos.d + 1) % 4;
             } else {
                 for (us k = 0; k < count; ++k) {
-                    Pos new, *new_ptr = setPtr(edges, pos);
-
-                    if (new_ptr) {
-                        new = *new_ptr;
-                    } else {
+                    Pos new;
+                    if (!setRead(edges, pos, &new)) {
                         new = pos;
                         new.i += di[new.d];
                         new.j += dj[new.d];

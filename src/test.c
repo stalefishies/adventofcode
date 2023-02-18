@@ -13,7 +13,7 @@ int main(void) {
     
     set_t set = {};
     for (us i = 0; i < 100; ++i) { setAdd(&set, i); }
-    for (us i = 0; i < 100; i += 2) { setDel(set, i); }
+    for (us i = 0; i < 100; i += 2) { setDelete(set, i); }
 
     u64 *arr = NULL;
     SetFor(set, i) { print("{u}", i); arrPush(&arr, i); }

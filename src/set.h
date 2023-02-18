@@ -106,19 +106,21 @@
 typedef struct SET_T() SET_T();
 SET_LINKAGE bool SET_N(SlotIndex)(SET_T() set, size_t index);
 
-SET_LINKAGE bool     SET_N(Mem)(SET_T() *set, size_t  cap);
-SET_LINKAGE bool     SET_N(Has)(SET_T()  set, SET_KEY key);
-SET_LINKAGE bool     SET_N(Del)(SET_T()  set, SET_KEY key);
+SET_LINKAGE bool     SET_N(Resize) (SET_T() *set, size_t  cap);
+SET_LINKAGE bool     SET_N(Has)    (SET_T()  set, SET_KEY key);
+SET_LINKAGE bool     SET_N(Delete) (SET_T()  set, SET_KEY key);
 #ifdef SET_MAP
-SET_LINKAGE SET_MAP *SET_N(Ptr)(SET_T()  set, SET_KEY key);
-SET_LINKAGE SET_MAP  SET_N(Get)(SET_T()  set, SET_KEY key);
-SET_LINKAGE bool     SET_N(Add)(SET_T() *set, SET_KEY key, SET_MAP map);
-SET_LINKAGE bool     SET_N(Set)(SET_T() *set, SET_KEY key, SET_MAP map);
+SET_LINKAGE SET_MAP *SET_N(Pointer)(SET_T()  set, SET_KEY key);
+SET_LINKAGE SET_MAP  SET_N(Get)    (SET_T()  set, SET_KEY key);
+SET_LINKAGE bool     SET_N(Add)    (SET_T() *set, SET_KEY key, SET_MAP map);
+SET_LINKAGE bool     SET_N(Read)   (SET_T()  set, SET_KEY key, SET_MAP *map);
+SET_LINKAGE bool     SET_N(Write)  (SET_T() *set, SET_KEY key, SET_MAP map);
 #else
-SET_LINKAGE SET_KEY *SET_N(Ptr)(SET_T()  set, SET_KEY key);
-SET_LINKAGE SET_KEY  SET_N(Get)(SET_T()  set, SET_KEY key);
-SET_LINKAGE bool     SET_N(Add)(SET_T() *set, SET_KEY key);
-SET_LINKAGE bool     SET_N(Set)(SET_T() *set, SET_KEY key);
+SET_LINKAGE SET_KEY *SET_N(Pointer)(SET_T()  set, SET_KEY key);
+SET_LINKAGE SET_KEY  SET_N(Get)    (SET_T()  set, SET_KEY key);
+SET_LINKAGE bool     SET_N(Add)    (SET_T() *set, SET_KEY key);
+SET_LINKAGE bool     SET_N(Read)   (SET_T()  set, SET_KEY *key);
+SET_LINKAGE bool     SET_N(Write)  (SET_T() *set, SET_KEY key);
 #endif
 
 #endif
@@ -171,7 +173,7 @@ SET_LINKAGE bool SET_N(SlotIndex)(SET_T() set, size_t index) {
     return set.slot[index] != SET_NULL;
 }
 
-SET_LINKAGE bool SET_N(Mem)(SET_T() *set, size_t min_cap) {
+SET_LINKAGE bool SET_N(Resize)(SET_T() *set, size_t min_cap) {
     if (!set) { return false; }
     SET_T() new = {0};
 
@@ -241,7 +243,7 @@ static SET_T(slot) *SET_N(SlotPtr)(SET_T() set, SET_KEY key) {
     return &set.slot[index];
 }
 
-SET_LINKAGE bool SET_N(Del)(SET_T() set, SET_KEY key) {
+SET_LINKAGE bool SET_N(Delete)(SET_T() set, SET_KEY key) {
     if (set.cap == 0) { return false; }
 
     u64 hash = SET_HASH(key);
@@ -302,20 +304,22 @@ SET_LINKAGE SET_KEY SET_N(Get)(SET_T() set, SET_KEY key)
     if (slot && *slot) {
 #ifdef SET_MAP
         return (*slot)->map;
-    } else {
-        return (SET_MAP){0};
 #else
         return (*slot)->key;
+#endif
     } else {
+#ifdef SET_MAP
+        return (SET_MAP){0};
+#else
         return (SET_KEY){0};
 #endif
     }
 }
 
 #ifdef SET_MAP
-SET_LINKAGE SET_MAP *SET_N(Ptr)(SET_T() set, SET_KEY key)
+SET_LINKAGE SET_MAP *SET_N(Pointer)(SET_T() set, SET_KEY key)
 #else
-SET_LINKAGE SET_KEY *SET_N(Ptr)(SET_T() set, SET_KEY key)
+SET_LINKAGE SET_KEY *SET_N(Pointer)(SET_T() set, SET_KEY key)
 #endif
 {
     if (set.cap == 0) { return NULL; }
@@ -340,7 +344,7 @@ SET_LINKAGE bool SET_N(Add)(SET_T() *set, SET_KEY key)
 {
     u64 init_dcap = (set ? set->cap / 2 : 0);
     u64 init_num  = (set ? set->num     : 0);
-    if (init_num >= init_dcap) { SET_N(Mem)(set, 4 * init_dcap); }
+    if (init_num >= init_dcap) { SET_N(Resize)(set, 4 * init_dcap); }
 
     SET_T(slot) *slot = SET_N(SlotPtr)(*set, key);
     if (*slot) { return false; }
@@ -358,14 +362,40 @@ SET_LINKAGE bool SET_N(Add)(SET_T() *set, SET_KEY key)
 }
 
 #ifdef SET_MAP
-SET_LINKAGE bool SET_N(Set)(SET_T() *set, SET_KEY key, SET_MAP map)
+SET_LINKAGE bool SET_N(Read)(SET_T() set, SET_KEY key, SET_MAP *map)
 #else
-SET_LINKAGE bool SET_N(Set)(SET_T() *set, SET_KEY key)
+SET_LINKAGE bool SET_N(Read)(SET_T() set, SET_KEY *key)
+#endif
+{
+    if (set.cap == 0) { return false; }
+
+#ifdef SET_MAP
+    SET_T(slot) *slot = SET_N(SlotPtr)(set, key);
+#else
+    SET_T(slot) *slot = SET_N(SlotPtr)(set, *key);
+#endif
+
+    if (slot && *slot) {
+#ifdef SET_MAP
+        *map = (*slot)->map;
+#else
+        *key = (*slot)->key;
+#endif
+        return true;
+    } else {
+        return false;
+    }
+}
+
+#ifdef SET_MAP
+SET_LINKAGE bool SET_N(Write)(SET_T() *set, SET_KEY key, SET_MAP map)
+#else
+SET_LINKAGE bool SET_N(Write)(SET_T() *set, SET_KEY key)
 #endif
 {
     u64 init_dcap = (set ? set->cap / 2 : 0);
     u64 init_num  = (set ? set->num     : 0);
-    if (init_num >= init_dcap) { SET_N(Mem)(set, 4 * init_dcap); }
+    if (init_num >= init_dcap) { SET_N(Resize)(set, 4 * init_dcap); }
 
     SET_T(slot) *slot = SET_N(SlotPtr)(*set, key);
     if (*slot) {
