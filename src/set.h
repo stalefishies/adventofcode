@@ -108,7 +108,7 @@ SET_LINKAGE bool SET_N(SlotIndex)(SET_T() set, size_t index);
 
 SET_LINKAGE bool     SET_N(Resize) (SET_T() *set, size_t  cap);
 SET_LINKAGE bool     SET_N(Has)    (SET_T()  set, SET_KEY key);
-SET_LINKAGE bool     SET_N(Delete) (SET_T()  set, SET_KEY key);
+SET_LINKAGE bool     SET_N(Delete) (SET_T() *set, SET_KEY key);
 #ifdef SET_MAP
 SET_LINKAGE SET_MAP *SET_N(Pointer)(SET_T()  set, SET_KEY key);
 SET_LINKAGE SET_MAP  SET_N(Get)    (SET_T()  set, SET_KEY key);
@@ -243,41 +243,44 @@ static SET_T(slot) *SET_N(SlotPtr)(SET_T() set, SET_KEY key) {
     return &set.slot[index];
 }
 
-SET_LINKAGE bool SET_N(Delete)(SET_T() set, SET_KEY key) {
-    if (set.cap == 0) { return false; }
+SET_LINKAGE bool SET_N(Delete)(SET_T() *set, SET_KEY key) {
+    if (set->cap == 0) { return false; }
 
     u64 hash = SET_HASH(key);
-    u64 mask = set.cap - 1;
+    u64 mask = set->cap - 1;
     size_t index = (SET_FIB * hash) & mask;
 
     bool found = false;
-    while (set.slot[index] != SET_NULL) {
-        if (SET_EQ(set.slot[index]->key, key)) { found = true; break; }
+    while (set->slot[index] != SET_NULL) {
+        if (SET_EQ(set->slot[index]->key, key)) { found = true; break; }
         index = (index + 1) & mask;
     }
     if (!found) { return false; }
 
-    set.slot[index]->free = set.free;
-    set.free = set.slot[index];
+    set->slot[index]->free = set->free;
+    set->free = set->slot[index];
 
     // swap index until deletion complete
-    size_t del = index;
-    for (;;) {
-        size_t next = (index + 1) & mask;
-        if (!set.slot[next]) { break; }
+    for (size_t next = index;;) {
+        next = (next + 1) & mask;
+        if (!set->slot[next]) { break; }
 
-        size_t base = SET_FIB * (SET_HASH(set.slot[index + 1]->key)) & mask;
-        if (next > del) {
-            if (del < base && base <= next) { break; }
+        u64 next_hash = SET_HASH(set->slot[next]->key);
+        size_t base = (SET_FIB * next_hash) & mask;
+
+        // swap if the free slot index is between next and its base
+        if (base <= next) {
+            if (index < base || index > next) { continue; }
         } else {
-            if (del < base || base <= next) { break; }
+            if (index >= base && index <= next) { continue; }
         }
 
-        set.slot[index] = set.slot[next];
+        set->slot[index] = set->slot[next];
         index = next;
     }
     
-    set.slot[index] = NULL;    
+    set->slot[index] = NULL;    
+    --set->num;
     return true;
 }
 
