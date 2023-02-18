@@ -3,10 +3,11 @@
 
 #include "common.h"
 
-EXPORT bool strEq(const String a, const String b);
-EXPORT s64 strCmp(const String a, const String b);
-EXPORT u64 strHash(const String a);
-EXPORT s64 strSearch(const String text, const String key);
+EXPORT bool   strEq(const String a, const String b);
+EXPORT s64    strCmp(const String a, const String b);
+EXPORT u64    strHash(const String a);
+EXPORT s64    strIndex(const String text, const String key);
+EXPORT s64    strCount(const String text, const String key);
 EXPORT String strSplit(String *text, const String key);
 
 typedef struct FmtCode {
@@ -74,24 +75,38 @@ u64 strHash(const String a) {
     return hash;
 }
 
-s64 strSearch(const String text, const String key) {
+s64 strIndex(const String text, const String key) {
     s64 max_offset = text.length - key.length;
     for (s64 offset = 0; offset <= max_offset; ++offset) {
         bool found = true;
         for (us i = 0; found && i < key.length; ++i) {
             found = (text.data[offset + i] == key.data[i]);
         }
-
         if (found) { return offset; }
     }
     
     return -1;
 }
 
+s64 strCount(const String text, const String key) {
+    s64 max_offset = text.length - key.length;
+    s64 count = 0;
+
+    for (s64 offset = 0; offset <= max_offset; ++offset) {
+        bool found = true;
+        for (us i = 0; found && i < key.length; ++i) {
+            found = (text.data[offset + i] == key.data[i]);
+        }
+        if (found) { ++count; }
+    }
+    
+    return count;
+}
+
 String strSplit(String *text, const String key) {
     String first = *text;
 
-    const s64 offset = strSearch(*text, key);
+    const s64 offset = strIndex(*text, key);
     if (offset < 0) {
         text->data  += text->length;
         text->length = 0;

@@ -84,7 +84,7 @@ String pStringCtx(String *ctx, us length) {
 String pSplitCtx(String *ctx, const String key) {
     String split = *ctx;
 
-    s64 offset = strSearch(*ctx, key);
+    s64 offset = strIndex(*ctx, key);
     if (offset < 0) {
         ctx->data  += ctx->length;
         ctx->length = 0;
@@ -130,7 +130,7 @@ bool parseSplitCtx(String *ctx, String *split_ctx, const String key) {
         return false;
     }
 
-    s64 offset = strSearch(*split_ctx, key);
+    s64 offset = strIndex(*split_ctx, key);
     if (offset < 0) {
         ctx->length       = split_ctx->length;
         split_ctx->data  += split_ctx->length;
