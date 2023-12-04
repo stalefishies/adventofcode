@@ -1,4 +1,4 @@
-#include "../aoc.h"
+#include "aoc.h"
 
 bool unique(u8 *at, us count) {
     u32 bits = 0;

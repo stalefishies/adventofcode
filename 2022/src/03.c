@@ -1,4 +1,4 @@
-#include "../aoc.h"
+#include "aoc.h"
 
 void solver(void) {
     u64 sum_one = 0;

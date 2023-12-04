@@ -1,9 +1,9 @@
-#include "lib/common.h"
-#include "lib/memory.h"
-#include "lib/string.h"
-#include "lib/inputs.h"
-#include "lib/parser.h"
-#include "lib/number.h"
+#include "common.h"
+#include "memory.h"
+#include "string.h"
+#include "inputs.h"
+#include "parser.h"
+#include "number.h"
 
 #if defined(AOC_SOLUTION) || defined(__clang_analyzer__)
 
@@ -30,7 +30,7 @@ UNUSED static void solve(const char *fmt, ...) {
 EXPORT inline Solution _solver(void) {
     void solver(void);
 
-    input = readInputFile(YEAR, DAY);
+    input = readInputFile(DAY);
     solver();
 
     return _solution;

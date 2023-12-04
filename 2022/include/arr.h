@@ -6,7 +6,7 @@
 #define ARR_HGUARD
 
 #include <stddef.h>
-#include "lib/memory.h"
+#include "memory.h"
 
 #define ArrFor(arr, var)                                            \
     for (size_t _af_i_##__LINE__ = 0, _af_b_##__LINE__ = 1;         \

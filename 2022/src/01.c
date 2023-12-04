@@ -1,4 +1,4 @@
-#include "../aoc.h"
+#include "aoc.h"
 
 void solver(void) {
     s64 max[3] = {0};

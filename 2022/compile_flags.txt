@@ -1,7 +1,8 @@
 -Wall
 -Wextra
--Isrc
+-Iinclude
+-Ilib
 -D_CRT_SECURE_NO_WARNINGS
 -DAOC_IMPLEMENTATION
--DYEAR=2015
+-DYEAR=2022
 -DDAY=1

@@ -38,6 +38,6 @@ Thumbs.db
 *.rdbg
 
 # Ignore inputs, build output, and 2019 python solutions
+20??/input
 build
-inputs
 2019

@@ -14,7 +14,7 @@
 #define SET_HGUARD
 
 #include <stdint.h>
-#include "lib/memory.h"
+#include "memory.h"
 
 #define SET_EXPAND(token, a, b, c) token(a, b, c)
 #define SET_CONCAT(a, b, c) a##b##c

@@ -4,15 +4,16 @@
 #define NOMINMAX
 #include <windows.h>
 
-#include "lib/common.h"
-#include "lib/memory.h"
+#include "common.h"
+#include "memory.h"
 
 AllocCtx local_alloc;
 double perf_freq;
 
-static Solver *loadSolver(char *dir) {
-    char path[12] = "XXXX/XX.dll";
-    for (int i = 0; i < 7; ++i) { path[i] = dir[i]; }
+static Solver *loadSolver(char *day) {
+    char path[7] = "XX.dll";
+    path[0] = day[0];
+    path[1] = day[1];
 
     HMODULE dll = LoadLibraryA(path);
     if (!dll) { return NULL; }
@@ -21,9 +22,9 @@ static Solver *loadSolver(char *dir) {
     return solver;
 }
 
-void runSolver(Solver *solver, char *dir) {
-    if (dir) {
-        print("{} DAY {}", (String){ (u8 *)dir, 4 }, (String){ (u8 *)dir + 5, 2 });
+void runSolver(Solver *solver, char *day) {
+    if (day) {
+        print("2022 DAY {s}", day);
     }
 
     AllocCtx solver_alloc = {0};
@@ -65,22 +66,17 @@ int main(int argc, char **argv) {
             }
         }
     } else {
-        char dir[7] = "XXXX/XX";
-        for (int year = 2015; year <= 2022; ++year) {
-            dir[0] = '0' + (year / 1000) % 10;
-            dir[1] = '0' + (year / 100 ) % 10;
-            dir[2] = '0' + (year / 10  ) % 10;
-            dir[3] = '0' + (year       ) % 10;
-            for (int day = 1; day <= 25; ++day) {
-                dir[5] = '0' + (day / 10) % 10;
-                dir[6] = '0' + (day     ) % 10;
+        char day[3] = "XX";
 
-                Solver *solver = loadSolver(dir);
-                if (solver) {
-                    print("");
-                    runSolver(solver, dir);
-                }
-            }
+        for (int d = 1; d <= 25; ++d) {
+            day[0] = '0' + (d / 10) % 10;
+            day[1] = '0' + (d     ) % 10;
+
+            Solver *solver = loadSolver(day);
+            if (solver) {
+                print("");
+                runSolver(solver, day);
+            } else { break; }
         }
     }
 }
