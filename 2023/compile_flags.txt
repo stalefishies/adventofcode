@@ -1,0 +1,7 @@
+-Wall
+-Wextra
+-Iinclude
+-Ilib
+-D_CRT_SECURE_NO_WARNINGS
+-DAOC_IMPLEMENTATION
+-DAOC_DAY=1
