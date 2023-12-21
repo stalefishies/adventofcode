@@ -26,14 +26,15 @@ EXPORT bool   parseSplitCtx (String *ctx, String *split_ctx, const String key);
 #define pGet()          (_p_ctx)
 #define pSet(str)       (_p_ctx = str)
 #define pLen()          (_p_ctx.length)
-#define pDone()         pDoneCtx    (&_p_ctx)
-#define pAccept(lit)    pAcceptCtx  (&_p_ctx, strLiteral(lit))
-#define pAssert(lit)    pAssertCtx  (&_p_ctx, strLiteral(lit))
-#define pPeek()         pPeekCtx    (&_p_ctx)
-#define pChar()         pCharCtx    (&_p_ctx)
-#define pString(len)    pStringCtx  (&_p_ctx, len)
-#define pSplit(lit)     pSplitCtx   (&_p_ctx, strLiteral(lit))
-#define pNum()          pNumCtx     (&_p_ctx)
+#define pCtx()          (&_p_ctx)
+#define pDone()         pDoneCtx    (pCtx())
+#define pAccept(lit)    pAcceptCtx  (pCtx(), strLiteral(lit))
+#define pAssert(lit)    pAssertCtx  (pCtx(), strLiteral(lit))
+#define pPeek()         pPeekCtx    (pCtx())
+#define pChar()         pCharCtx    (pCtx())
+#define pString(len)    pStringCtx  (pCtx(), len)
+#define pSplit(lit)     pSplitCtx   (pCtx(), strLiteral(lit))
+#define pNum()          pNumCtx     (pCtx())
 
 #endif /* PARSER_HGUARD */
 
@@ -59,7 +60,7 @@ bool pAcceptCtx(String *ctx, const String key) {
 }
 
 void pAssertCtx(String *ctx, const String key) {
-    if (!pAcceptCtx(ctx, key)) { error("parse assertion failure"); }
+    if (!pAcceptCtx(ctx, key)) { error("parse assertion failure on '{S}'", key); }
 }
 
 u8 pPeekCtx(String *ctx) {

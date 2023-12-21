@@ -175,6 +175,30 @@ ARR_LINKAGE s64 ARR_PREFIX(Search)(ARR_T *arr, ARR_T value) {
     arr[(j)]  = tmp;                \
 } while (0)
 
+ARR_LINKAGE ARR_T ARR_PREFIX(Min)(ARR_T *arr) {
+    size_t len = (arr ? *((size_t *)(arr) - 1) : 0);
+    if (len == 0) { return (ARR_T){0}; }
+
+    ARR_T min = arr[0];
+    for (us i = 1; i < len; ++i) {
+        if (ARR_CMP(min, arr[i]) > 0) { min = arr[i]; }
+    }
+
+    return min;
+}
+
+ARR_LINKAGE ARR_T ARR_PREFIX(Max)(ARR_T *arr) {
+    size_t len = (arr ? *((size_t *)(arr) - 1) : 0);
+    if (len == 0) { return (ARR_T){0}; }
+
+    ARR_T min = arr[0];
+    for (us i = 1; i < len; ++i) {
+        if (ARR_CMP(min, arr[i]) < 0) { min = arr[i]; }
+    }
+
+    return min;
+}
+
 static void ARR_PREFIX(SortInsert)(ARR_T *arr, size_t N, s64 sign) {
     for (us i = 1; i < N; ++i) {
         for (us j = i; j > 0; --j) {
