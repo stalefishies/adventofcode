@@ -112,15 +112,19 @@ s64 pNumCtx(String *ctx) {
         ++at;
     }
 
+    bool read = false;
     s64 value = 0;
     while (at < hi && *at >= '0' && *at <= '9') {
+        read = true;
         value *= 10;
         value += *at++ - '0';
     }
 
-    ctx->length = hi - at;
-    ctx->data   = at;
-    return sign * value;
+    if (read) {
+        ctx->length = hi - at;
+        ctx->data   = at;
+        return sign * value;
+    } else { return 0; }
 }
 
 bool parseSplitCtx(String *ctx, String *split_ctx, const String key) {
