@@ -8,7 +8,8 @@ GLOBNAMES=$(sort $(foreach GLOBPATH,$(wildcard $1),$(lastword $(subst /, ,$(base
 
 # Get day information
 $(eval INPUTS=$(call GLOBNAMES,src/??.c src/??-1.c src/??-2.c))
-LAST_DAY = $(patsubst %-1,%,$(patsubst %-2,%,$(lastword $(INPUTS))))
+LAST_DLL = $(lastword $(INPUTS))
+LAST_DAY = $(patsubst %-1,%,$(patsubst %-2,%,$(LAST_DLL)))
 
 define build_dll
 ALL_DLLS += build/$1.dll
@@ -36,5 +37,5 @@ all: $(ALL_DLLS) build/main.exe build/test.exe
 clean:
 	@rm build/*
 
-run: build/main.exe build/$(LAST_DAY).dll
+run: build/main.exe build/$(LAST_DLL).dll
 	@pushd build >/dev/null && ./main.exe $(LAST_DAY) && popd >/dev/null
