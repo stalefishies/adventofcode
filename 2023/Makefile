@@ -15,7 +15,7 @@ define build_dll
 ALL_DLLS += build/$1.dll
 build/$1.dll: src/$1.c include/*.h build/aoc.dll
 	$$(info Creating $1.dll...)
-	@clang $(CFLAGS) -shared -DAOC_DAY=$(patsubst %-1,%,$(patsubst %-2,%,$1)) \
+	@clang $(CFLAGS) -shared -DAOC_DAY=$(patsubst 0%,%,$(patsubst %-1,%,$(patsubst %-2,%,$1))) \
 		src/$1.c -Lbuild -laoc -o build/$1.dll > /dev/null
 endef
 $(foreach INPUT,$(INPUTS),$(eval $(call build_dll,$(INPUT))))

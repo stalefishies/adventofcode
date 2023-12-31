@@ -48,7 +48,7 @@
 #endif
 
 #ifndef SET_LINKAGE
-#       define SET_LINKAGE __attribute__((unused)) static
+#   define SET_LINKAGE __attribute__((unused)) static
 #endif
 
 #ifndef SET_ALLOC
@@ -423,13 +423,18 @@ SET_LINKAGE bool SET_N(Write)(SET_T() *set, SET_KEY key)
 #endif
 
 
-
 /********
  * CLEANUP
  */
 
 #ifdef SET_KEY
 #   undef SET_KEY
+#endif
+#ifdef SET_MAP
+#   undef SET_MAP
+#endif
+#ifdef SET_HASH
+#   undef SET_HASH
 #endif
 #ifdef SET_PREFIX
 #   undef SET_PREFIX
@@ -445,6 +450,9 @@ SET_LINKAGE bool SET_N(Write)(SET_T() *set, SET_KEY key)
 #endif
 #ifdef SET_DECLARE
 #   undef SET_DECLARE
+#endif
+#ifdef SET_TYPEDEF
+#   undef SET_TYPEDEF
 #endif
 #ifdef SET_DEFINE
 #   undef SET_DEFINE
